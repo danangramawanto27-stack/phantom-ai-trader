@@ -11,7 +11,7 @@ body{margin:0;background:#090d18;color:#edf2ff;font-family:Arial,sans-serif}
 header{padding:22px;background:#111a2b;border-bottom:1px solid #26334b}
 .logo{font-size:23px;font-weight:bold;color:#9b8cff}
 .sub{color:#8795ad;font-size:12px;margin-top:6px}
-main{padding:18px;max-width:1050px;margin:auto}
+main{padding:18px;max-width:1150px;margin:auto}
 h2{font-size:17px;margin:24px 0 12px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:#131d30;border:1px solid #293751;border-radius:13px;padding:16px}
@@ -19,41 +19,73 @@ h2{font-size:17px;margin:24px 0 12px}
 .value{font-size:23px;font-weight:bold;margin-top:9px}
 .green{color:#37d99b}
 .purple{color:#a99aff}
+.red{color:#ff7373}
+.yellow{color:#ffda75}
 .muted{color:#8795ad}
-button{border:0;border-radius:9px;padding:13px 16px;font-weight:bold;cursor:pointer}
+button{border:0;border-radius:9px;padding:11px 14px;font-weight:bold;cursor:pointer}
 .primary{background:#8872ff;color:white}
 .secondary{background:#26344e;color:white}
 input{width:100%;padding:12px;background:#0b1425;color:white;border:1px solid #35435d;border-radius:8px;margin:8px 0 14px}
 .status{display:inline-block;background:#473b16;color:#ffda75;padding:6px 10px;border-radius:20px;font-size:11px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-td,th{text-align:left;padding:13px 7px;border-bottom:1px solid #293751}
-th{color:#91a0ba}
 .actions{display:flex;gap:9px;flex-wrap:wrap}
+.scanner-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;min-width:850px;border-collapse:collapse;font-size:12px}
+td,th{text-align:left;padding:12px 8px;border-bottom:1px solid #293751;white-space:nowrap}
+th{color:#91a0ba}
+.token-name{font-weight:bold;color:#edf2ff}
+.token-symbol{color:#8795ad;font-size:11px;margin-top:4px}
+.risk{display:inline-block;padding:5px 8px;border-radius:6px;font-size:10px;font-weight:bold;background:#26344e}
+.risk-good{color:#37d99b}
+.risk-warn{color:#ffda75;background:#473b16}
+.risk-bad{color:#ff7373;background:#49252e}
+.copy-btn{padding:6px 8px;font-size:10px;background:#26344e;color:white}
+.dex-link{color:#a99aff;text-decoration:none}
+.scanner-info{font-size:11px;color:#8795ad;margin-top:12px}
 footer{text-align:center;padding:25px;color:#72819c;font-size:11px}
 @media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
+
 <header>
  <div class="logo">◈ PHANTOM AI TRADER</div>
  <div class="sub">SOLANA • PUMP.FUN • TRADING DASHBOARD</div>
 </header>
+
 <main>
  <span class="status">● PAPER TRADING MODE</span>
+
  <h2>Dashboard Overview</h2>
  <div class="grid">
-  <div class="card"><div class="label">Wallet Balance</div><div class="value purple">1.00 SOL</div><div class="sub">Simulated balance</div></div>
-  <div class="card"><div class="label">Total Profit / Loss</div><div class="value green" id="pnl">+0.000 SOL</div><div class="sub">Paper trading</div></div>
-  <div class="card"><div class="label">Open Positions</div><div class="value" id="positions">0</div></div>
-  <div class="card"><div class="label">Bot Status</div><div class="value" id="botStatus">STOPPED</div></div>
+  <div class="card">
+   <div class="label">Wallet Balance</div>
+   <div class="value purple">1.00 SOL</div>
+   <div class="sub">Simulated balance</div>
+  </div>
+  <div class="card">
+   <div class="label">Total Profit / Loss</div>
+   <div class="value green" id="pnl">+0.000 SOL</div>
+   <div class="sub">Paper trading</div>
+  </div>
+  <div class="card">
+   <div class="label">Open Positions</div>
+   <div class="value" id="positions">0</div>
+  </div>
+  <div class="card">
+   <div class="label">Bot Status</div>
+   <div class="value" id="botStatus">STOPPED</div>
+  </div>
  </div>
 
  <h2>Trading Control</h2>
  <div class="card">
   <div class="label">Budget simulasi (SOL)</div>
   <input id="budget" type="number" value="1" min="0.01" max="1" step="0.01">
+
   <div class="label">Maximum trade per token (SOL)</div>
   <input id="tradeSize" type="number" value="0.05" min="0.01" max="1" step="0.01">
+
   <div class="actions">
    <button class="primary" onclick="startBot()">START PAPER BOT</button>
    <button class="secondary" onclick="stopBot()">STOP BOT</button>
@@ -61,63 +93,301 @@ footer{text-align:center;padding:25px;color:#72819c;font-size:11px}
   <p class="sub" id="message">Bot belum berjalan.</p>
  </div>
 
- <h2>Token Scanner</h2>
+ <h2>Solana Token Scanner</h2>
  <div class="card">
-  <div class="label">Pemantauan token Pump.fun</div>
-  <p class="muted">Scanner ini masih berupa contoh tampilan. Belum mengambil data pasar langsung.</p>
-  <button class="secondary" onclick="scan()">SIMULATE SCAN</button>
-  <table>
-   <thead><tr><th>Token</th><th>Market Cap</th><th>Status</th></tr></thead>
-   <tbody id="tokens">
-    <tr><td>Example SOL</td><td>Demo</td><td class="green">Watch</td></tr>
-   </tbody>
-  </table>
+  <div class="scanner-head">
+   <div>
+    <div class="label">Live Market Scanner</div>
+    <p class="muted" id="scannerStatus">Menunggu data pasar...</p>
+   </div>
+   <button class="primary" id="refreshBtn" onclick="loadTokens()">↻ REFRESH</button>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Token</th>
+      <th>Market Cap</th>
+      <th>Liquidity</th>
+      <th>Volume 24H</th>
+      <th>Buy / Sell</th>
+      <th>Change 24H</th>
+      <th>Risk</th>
+      <th>Contract</th>
+      <th>Chart</th>
+     </tr>
+    </thead>
+    <tbody id="tokens">
+     <tr><td colspan="9">Mengambil data token...</td></tr>
+    </tbody>
+   </table>
+  </div>
+
+  <div class="scanner-info" id="lastUpdate">
+   Sumber data: DexScreener
+  </div>
+  <p class="scanner-info">
+   Catatan: Data ini bukan sinyal beli. Token dengan likuiditas rendah
+   atau nol memiliki risiko tinggi. Tidak semua token baru Pump.fun
+   tercakup dalam sumber data ini.
+  </p>
  </div>
 
  <h2>Risk Management</h2>
  <div class="grid">
-  <div class="card"><div class="label">Stop Loss</div><div class="value">10%</div></div>
-  <div class="card"><div class="label">Take Profit</div><div class="value">20%</div></div>
-  <div class="card"><div class="label">Max Positions</div><div class="value">3</div></div>
-  <div class="card"><div class="label">Trading Mode</div><div class="value purple">PAPER</div></div>
+  <div class="card">
+   <div class="label">Stop Loss</div>
+   <div class="value">10%</div>
+  </div>
+  <div class="card">
+   <div class="label">Take Profit</div>
+   <div class="value">20%</div>
+  </div>
+  <div class="card">
+   <div class="label">Max Positions</div>
+   <div class="value">3</div>
+  </div>
+  <div class="card">
+   <div class="label">Trading Mode</div>
+   <div class="value purple">PAPER</div>
+  </div>
  </div>
+
  <h2>Activity Log</h2>
- <div class="card" id="logs"><p class="sub">Dashboard berhasil dimuat.</p></div>
+ <div class="card" id="logs">
+  <p class="sub">Dashboard berhasil dimuat.</p>
+ </div>
 </main>
-<footer>PHANTOM AI TRADER • DEMO VERSION • NO LIVE TRANSACTIONS</footer>
+
+<footer>
+ PHANTOM AI TRADER • PAPER TRADING • NO LIVE TRANSACTIONS
+</footer>
+
 <script>
-let running=false;
-let count=0;
-function log(t){
- document.getElementById("logs").innerHTML=
- "<p class='sub'>"+new Date().toLocaleTimeString()+" — "+t+"</p>"+
- document.getElementById("logs").innerHTML;
+let running = false;
+
+function log(message) {
+ const logs = document.getElementById("logs");
+ const item = document.createElement("p");
+ item.className = "sub";
+ item.textContent = new Date().toLocaleTimeString() + " — " + message;
+ logs.prepend(item);
+
+ while (logs.children.length > 8) {
+  logs.removeChild(logs.lastChild);
+ }
 }
-function startBot(){
- let b=Number(document.getElementById("budget").value);
- let s=Number(document.getElementById("tradeSize").value);
- if(b<=0||b>1||s<=0||s>b){
-  alert("Periksa kembali budget. Maksimal 1 SOL untuk pengujian.");
+
+function money(value) {
+ const n = Number(value);
+ if (!Number.isFinite(n)) return "-";
+
+ return "$" + n.toLocaleString("en-US", {
+  maximumFractionDigits: 0
+ });
+}
+
+function price(value) {
+ const n = Number(value);
+ if (!Number.isFinite(n)) return "-";
+
+ return "$" + n.toLocaleString("en-US", {
+  maximumFractionDigits: 8
+ });
+}
+
+function riskInfo(token) {
+ const liquidity = Number(token.liquidity || 0);
+ const buys = Number(token.buys24h || 0);
+ const sells = Number(token.sells24h || 0);
+ const change = Number(token.change24h || 0);
+
+ if (liquidity <= 0) {
+  return { text: "NO LIQUIDITY", css: "risk-bad" };
+ }
+
+ if (liquidity < 5000) {
+  return { text: "LOW LIQUIDITY", css: "risk-bad" };
+ }
+
+ if (sells > buys) {
+  return { text: "SELL WARNING", css: "risk-warn" };
+ }
+
+ if (change > 100 || change < -30) {
+  return { text: "VOLATILE", css: "risk-warn" };
+ }
+
+ return { text: "WATCH", css: "risk-good" };
+}
+
+function addCell(row, value, className) {
+ const cell = document.createElement("td");
+ cell.textContent = value;
+ if (className) cell.className = className;
+ row.appendChild(cell);
+ return cell;
+}
+
+function renderTokens(tokens) {
+ const tbody = document.getElementById("tokens");
+ tbody.replaceChildren();
+
+ if (!Array.isArray(tokens) || tokens.length === 0) {
+  const row = document.createElement("tr");
+  addCell(row, "Belum ada token yang ditemukan.", "");
+  tbody.appendChild(row);
   return;
  }
- running=true;
- document.getElementById("botStatus").textContent="RUNNING";
- document.getElementById("message").textContent="Paper bot aktif. Tidak ada transaksi sungguhan.";
- log("Paper bot started.");
+
+ tokens.forEach(token => {
+  const row = document.createElement("tr");
+
+  const nameCell = document.createElement("td");
+  const name = document.createElement("div");
+  name.className = "token-name";
+  name.textContent = token.name || "Unknown";
+
+  const symbol = document.createElement("div");
+  symbol.className = "token-symbol";
+  symbol.textContent = token.symbol || "-";
+
+  nameCell.append(name, symbol);
+  row.appendChild(nameCell);
+
+  addCell(row, money(token.marketCap));
+  addCell(row, money(token.liquidity));
+  addCell(row, money(token.volume24h));
+
+  addCell(
+   row,
+   Number(token.buys24h || 0).toLocaleString() +
+   " / " +
+   Number(token.sells24h || 0).toLocaleString()
+  );
+
+  const change = Number(token.change24h || 0);
+  addCell(
+   row,
+   (change > 0 ? "+" : "") + change.toFixed(2) + "%",
+   change >= 0 ? "green" : "red"
+  );
+
+  const risk = riskInfo(token);
+  const riskCell = document.createElement("td");
+  const badge = document.createElement("span");
+  badge.className = "risk " + risk.css;
+  badge.textContent = risk.text;
+  riskCell.appendChild(badge);
+  row.appendChild(riskCell);
+
+  const addressCell = document.createElement("td");
+  const copyButton = document.createElement("button");
+  copyButton.className = "copy-btn";
+  copyButton.textContent = "COPY CA";
+
+  copyButton.addEventListener("click", async () => {
+   try {
+    await navigator.clipboard.writeText(token.address || "");
+    copyButton.textContent = "COPIED";
+    setTimeout(() => copyButton.textContent = "COPY CA", 1500);
+   } catch {
+    copyButton.textContent = "FAILED";
+   }
+  });
+
+  addressCell.appendChild(copyButton);
+  row.appendChild(addressCell);
+
+  const linkCell = document.createElement("td");
+  if (token.url) {
+   const link = document.createElement("a");
+   link.href = token.url;
+   link.target = "_blank";
+   link.rel = "noopener noreferrer";
+   link.className = "dex-link";
+   link.textContent = "VIEW";
+   linkCell.appendChild(link);
+  } else {
+   linkCell.textContent = "-";
+  }
+  row.appendChild(linkCell);
+
+  tbody.appendChild(row);
+ });
 }
-function stopBot(){
- running=false;
- document.getElementById("botStatus").textContent="STOPPED";
- document.getElementById("message").textContent="Bot dihentikan.";
+
+async function loadTokens() {
+ const status = document.getElementById("scannerStatus");
+ const button = document.getElementById("refreshBtn");
+
+ status.textContent = "Mengambil data dari DexScreener...";
+ button.disabled = true;
+
+ try {
+  const response = await fetch("/api/tokens", {
+   cache: "no-store"
+  });
+
+  if (!response.ok) {
+   throw new Error("Server API error: " + response.status);
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data.tokens)) {
+   throw new Error("Format data token tidak sesuai.");
+  }
+
+  renderTokens(data.tokens);
+
+  status.textContent =
+   data.tokens.length + " token ditemukan • Sumber: " +
+   (data.source || "Market API");
+
+  document.getElementById("lastUpdate").textContent =
+   "Terakhir diperbarui: " + new Date().toLocaleTimeString();
+
+  log("Scanner berhasil mengambil " + data.tokens.length + " token.");
+
+ } catch (error) {
+  status.textContent = "Gagal mengambil data: " + error.message;
+  log("Scanner error: " + error.message);
+ } finally {
+  button.disabled = false;
+ }
+}
+
+function startBot() {
+ const budget = Number(document.getElementById("budget").value);
+ const size = Number(document.getElementById("tradeSize").value);
+
+ if (budget <= 0 || budget > 1 || size <= 0 || size > budget) {
+  alert("Periksa budget. Maksimal 1 SOL untuk pengujian.");
+  return;
+ }
+
+ running = true;
+ document.getElementById("botStatus").textContent = "RUNNING";
+ document.getElementById("message").textContent =
+  "Paper mode aktif. Tidak ada transaksi sungguhan.";
+
+ log("Paper bot started. Tidak ada transaksi sungguhan.");
+}
+
+function stopBot() {
+ running = false;
+ document.getElementById("botStatus").textContent = "STOPPED";
+ document.getElementById("message").textContent = "Bot dihentikan.";
  log("Paper bot stopped.");
 }
-function scan(){
- const names=["SOL Demo","Pump Example","Meme Test","Token Sample"];
- const name=names[Math.floor(Math.random()*names.length)];
- document.getElementById("tokens").innerHTML=
- "<tr><td>"+name+"</td><td>Demo only</td><td class='green'>Watch</td></tr>";
- log("Simulated scan completed.");
-}
+
+// Ambil data saat dashboard dibuka
+loadTokens();
+
+// Perbarui data setiap 60 detik
+setInterval(loadTokens, 60000);
 </script>
 </body>
 </html>
