@@ -340,7 +340,19 @@ async function loadTokens() {
    throw new Error("Format data token tidak sesuai.");
   }
 
-  renderTokens(data.tokens);
+const candidates = data.tokens
+ .filter(token =>
+  Number(token.liquidity) >= 10000 &&
+  Number(token.volume24h) >= 5000 &&
+  Number(token.buys24h) > Number(token.sells24h) &&
+  Number(token.marketCap) > 0
+ )
+ .sort((a, b) =>
+  Number(b.volume24h) - Number(a.volume24h)
+ )
+ .slice(0, 5);
+
+renderTokens(candidates);
 
   status.textContent =
    data.tokens.length + " token ditemukan • Sumber: " +
